@@ -10,9 +10,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
   },
@@ -23,6 +27,5 @@
   "bugs": {
     "url": "https://github.com/ClaMG/api_person/issues"
   },
-  "homepage": "https://github.com/ClaMG/api_person#readme",
-  "type": "module"
+  "homepage": "https://github.com/ClaMG/api_person#readme"
 }

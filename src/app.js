@@ -1,45 +1,40 @@
-//import {openDb} from './configDB.js';
-import {createTable, insertPessoa, updatePessoa, selectPessoas, selectPessoa} from './Controler/Pessoa.js';
-
 import express from 'express';
-const app = express();
-app.use(express.json());
+import fs from 'fs';
+import https from 'https';
+import cors from 'cors';
 
+import {createTable} from './Controler/Pessoa.js';
 createTable();
 
-app.get('/', function (req, res) {
-  res.send('Funcionando a API');
+const app = express();
+app.use(express.json());
+app.use(cors());
+import jwt from 'jsonwebtoken';
+
+const PORT = 3000;
+const USER = [{id: 1, username: 'admin', password: 'password'}];
+
+app.post('/login', (req, res) => {
+    const {username, password} = req.body;
+    const user = USER.find(u => u.username === username && u.password === password);
+    
+    if (!user) return res.status(401).json({message: 'Credenciais inválidas'});
+
+    const token = jwt.sign({})
+
 });
 
-app.get('/pessoas', async function (req, res) {
-  let pessoas = await selectPessoas();
-    res.json(pessoas);
-});
 
-app.get('/pessoa', async function (req, res) {
-  let pessoa = await selectPessoa(req.body.id);
-    res.json(pessoa);
-});
 
-app.post('/pessoa', function(req, res){
-    insertPessoa(req.body);
-    res.json({
-        "statuscode": 200
-    })
-});
+import router from './routes.js';
+app.use(router);
 
-app.put('/pessoa', function(req, res){
-    if(!req.body.id && req.body){
-        res.json({
-            "statuscode": 400,
-            "mensagem": "Informe um id"
-        })
-    }
-
-    updatePessoa(req.body);
-    res.json({
-        "statuscode": 200
-    })
-});
 
 app.listen(3000, ()=>console.log("Api Rodando."))
+
+
+https.createServer({
+    cert: fs.readFileSync('src/SSL/code.crt'),
+    key: fs.readFileSync('src/SSL/code.key')
+
+}, app).listen(3001, ()=>console.log("Api Rodando em HTTPS."))
