@@ -1,5 +1,8 @@
 import { Router } from "express";
-import {createTable, insertUsuario, updateUsuario, selectUsuarios, selectUsuario, deleteUsuario} from './Controler/Pessoa.js';
+import {createTable, insertUsuario, updateUsuario, selectUsuarios, selectUsuario, deleteUsuario, testAutorizar, logar, api} from './Controler/Pessoa.js';
+
+import { authToken } from './authToken.js';
+import { authenticateApiKey } from './middleware.js';
 
 const router = Router();
 
@@ -18,5 +21,8 @@ router.get('/user', selectUsuario);//Leitura de uma pessoa
 router.put('/user', updateUsuario);//Atualização dos dados de uma pessoa
 router.post('/user', insertUsuario);//Inserção de uma nova pessoa
 router.delete('/user', deleteUsuario);//Deleção de uma pessoa
+router.get('/protected',authToken, testAutorizar);//Rota protegida de teste
+router.post('/login', logar);//Rota protegida de teste
+router.get('/api/dados-protegidos', authenticateApiKey, api);//Rota protegida de teste
 
 export default router;

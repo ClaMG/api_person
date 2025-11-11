@@ -1,4 +1,9 @@
 import{openDb}from'../configDB.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
+
+
 
 export async function createTable(){
     openDb().then(db=>{
@@ -50,4 +55,36 @@ export async function deleteUsuario(req, res){
     res.json({
         "statuscode": 200
     }); 
+}
+
+
+export async function logar(req, res){
+    const USER = [{id: 1, username: 'admin', password: '1234'}];
+    const secretKey = process.env.JWT_SECRET || 'secretayour_super_secret_key_here';
+    
+    const {username, password} = req.body;
+    const user = USER.find(u => u.username === username && u.password === password);
+    
+    if (!user) {
+        return res.status(401).json({message: 'Credenciais inválidas'});
+    }
+    
+    
+    if (!secretKey) {
+        console.error('JWT_SECRET not defined in .env');
+        return res.status(500).json({message: 'Erro interno do servidor' });
+    }
+
+    const payload = {id: user.id};
+
+    const token = jwt.sign(payload, secretKey, {expiresIn: '1h'});
+    res.json({token});
+}
+
+export async function testAutorizar(req, res){
+     res.json({message: 'Acesso concedido a rota protegida'}); 
+}
+
+export async function api(req, res){
+    res.json({ mensagem: 'Dados confidenciais acessados com sucesso!' });
 }
