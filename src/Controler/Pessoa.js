@@ -7,14 +7,14 @@ dotenv.config();
 
 export async function createTable(){
     openDb().then(db=>{
-        db.exec('CREATE TABLE IF NOT EXISTS Usuarisos (id INTEGER PRIMARY KEY, nome TEXT, idade INTEGER, cpf CHAR(11), telefone CHAR(11), email TEXT)');
+        db.exec('CREATE TABLE IF NOT EXISTS Usuarisos (id INTEGER PRIMARY KEY, usuario TEXT, senha TEXT, nome TEXT, idade INTEGER, cpf CHAR(11), telefone CHAR(11), email TEXT)');
     })
 }
 
 export async function insertUsuario(req, res){
     let user = req.body;
     openDb().then(db=>{
-        db.run('INSERT INTO Usuarios (nome, idade, cpf, telefone, email) VALUES (?, ?, ?, ?, ?)', [user.nome, user.idade, user.cpf, user.telefone, user.email]);
+        db.run('INSERT INTO Usuarios (usuario, senha, nome, idade, cpf, telefone, email) VALUES (?, ?, ?, ?, ?, ?, ?)', [user.usuario, user.senha, user.nome, user.idade, user.cpf, user.telefone, user.email]);
     });
     res.json({
         "statuscode": 200
@@ -24,7 +24,7 @@ export async function insertUsuario(req, res){
 export async function updateUsuario(req, res){
     let user = req.body;
     openDb().then(db=>{
-        db.run('UPDATE Usuarios SET nome = ?, idade = ?, cpf=?, telefone=?, email=? WHERE id = ?', [user.nome, user.idade, user.cpf, user.telefone, user.email, user.id]);
+        db.run('UPDATE Usuarios SET usuario=?, senha=?, nome = ?, idade = ?, cpf=?, telefone=?, email=? WHERE id = ?', [user.usuario, user.senha, user.nome, user.idade, user.cpf, user.telefone, user.email, user.id]);
     });
     res.json({
         "statuscode": 200
@@ -61,7 +61,25 @@ export async function deleteUsuario(req, res){
 export async function logar(req, res){
     const USER = [{id: 1, username: 'admin', password: '1234'}];
     const secretKey = process.env.JWT_SECRET || 'secretayour_super_secret_key_here';
-    
+
+    const config = {
+        user: 'username',
+        password: 'password'
+    };
+
+    /*
+    var poolConnection = await sql.connect(config);
+
+        // Execute a consulta
+        var resultSet = await poolConnection.request().query(`SELECT usuario * FROM Usuario`);
+
+        // Atribua os dados à variável
+        // A resposta está em resultSet.recordset, que é um array de objetos
+        const dadosDaBusca = resultSet.recordset;
+
+        console.log('Dados obtidos:', dadosDaBusca);
+        */
+
     const {username, password} = req.body;
     const user = USER.find(u => u.username === username && u.password === password);
     

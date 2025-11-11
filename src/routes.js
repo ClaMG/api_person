@@ -21,8 +21,8 @@ router.get('/user', selectUsuario);//Leitura de uma pessoa
 router.put('/user', updateUsuario);//Atualização dos dados de uma pessoa
 router.post('/user', insertUsuario);//Inserção de uma nova pessoa
 router.delete('/user', deleteUsuario);//Deleção de uma pessoa
-router.get('/protected',authToken, testAutorizar);//Rota protegida de teste
-router.post('/login', logar);//Rota protegida de teste
-router.get('/api/dados-protegidos', authenticateApiKey, api);//Rota protegida de teste
+router.get('/protected',authToken, testAutorizar);//Rota protegida
+router.post('/login', logar);//Rota de login
+router.get('/api/dados-protegidos', authenticateApiKey, api);//Rota protegida por API Key
 
 export default router;
