@@ -5,15 +5,19 @@ const secretKey = process.env.JWT_SECRET || "secretayour_super_secret_key_here";
 
 
 function authToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
+    const authHeader = req.headers['authorization'];//Pega o token do cabeçalho da requisição
     const token =authHeader?.split(' ')[1];
     
-    if (token == null) return res.sendStatus(401);
+    if (token == null) return res.sendStatus(401).msg = 'Token não fornecido';
     
-    jwt.verify(token, secretKey, (err, user) => {
-        if (err) return res.sendStatus(401);
-        req.user = user;
-        next();
+    jwt.verify(token, secretKey, (err, user) => {//Verifica o token
+        if (err){
+            return res.sendStatus(401).msg = 'Token inválido ou expirado';   
+        } else{
+            req.user = user;//Adiciona as informações do usuário à requisição
+            next();
+        }
+
     });
 }
 export { authToken };

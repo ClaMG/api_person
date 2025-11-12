@@ -4,6 +4,7 @@ import https from 'https';
 import cors from 'cors';
 
 import {createTable} from './Controler/Pessoa.js';
+
 createTable();
 
 const app = express();
