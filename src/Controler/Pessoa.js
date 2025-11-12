@@ -7,7 +7,7 @@ dotenv.config();
 
 export async function createTable(){
     openDb().then(db=>{
-        db.exec('CREATE TABLE IF NOT EXISTS Usuarisos (id INTEGER PRIMARY KEY, usuario TEXT, senha TEXT, nome TEXT, idade INTEGER, cpf CHAR(11), telefone CHAR(11), email TEXT)');
+        db.exec('CREATE TABLE IF NOT EXISTS Usuarios (id INTEGER PRIMARY KEY, usuario TEXT, senha TEXT, nome TEXT, idade INTEGER, cpf CHAR(11), telefone CHAR(11), email TEXT)');
     })
 }
 
@@ -58,35 +58,35 @@ export async function deleteUsuario(req, res){
 }
 
 
+async function getUserByUsername(username) {
+    const db = await openDb();
+    
+    const query = 'SELECT id, senha FROM Usuarios WHERE usuario = ?'; //Filtra pelo usuario na tabela
+    const user = await db.get(query, [username]); //diz qual o usuario
+    
+    await db.close();//fecha a conexão com o banco de dados
+    return user;//retorna o usuario encontrado
+}
+
 export async function logar(req, res){
-    const USER = [{id: 1, username: 'admin', password: '1234'}];
     const secretKey = process.env.JWT_SECRET || 'secretayour_super_secret_key_here';
-
-    const config = {
-        user: 'username',
-        password: 'password'
-    };
-
-    /*
-    var poolConnection = await sql.connect(config);
-
-        // Execute a consulta
-        var resultSet = await poolConnection.request().query(`SELECT usuario * FROM Usuario`);
-
-        // Atribua os dados à variável
-        // A resposta está em resultSet.recordset, que é um array de objetos
-        const dadosDaBusca = resultSet.recordset;
-
-        console.log('Dados obtidos:', dadosDaBusca);
-        */
-
     const {username, password} = req.body;
-    const user = USER.find(u => u.username === username && u.password === password);
     
+    const user = await getUserByUsername(username); //usa a função e manda o usuario para verificação
+
+    //verifica usuario
+
     if (!user) {
-        return res.status(401).json({message: 'Credenciais inválidas'});
+        return res.status(401).json({message: 'Credenciais inválidas (Usuário não encontrado)'});
     }
+
+    //verifica senha
+
+    const passwordMatch = user.senha === password;
     
+    if (!passwordMatch) {
+        return res.status(401).json({message: 'Credenciais inválidas (Senha incorreta)'});
+    }
     
     if (!secretKey) {
         console.error('JWT_SECRET not defined in .env');
@@ -95,14 +95,14 @@ export async function logar(req, res){
 
     const payload = {id: user.id};
 
-    const token = jwt.sign(payload, secretKey, {expiresIn: '1h'});
+    const token = jwt.sign(payload, secretKey, {expiresIn: '1h'});//cria o token
     res.json({token});
 }
 
-export async function testAutorizar(req, res){
+export async function autorizarUser(req, res){
      res.json({message: 'Acesso concedido a rota protegida'}); 
 }
 
-export async function api(req, res){
+export async function authenticateApiKey(req, res){
     res.json({ mensagem: 'Dados confidenciais acessados com sucesso!' });
 }
