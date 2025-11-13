@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
 });
 
 
+
 router.get('/users', authToken, selectUsuarios);//Leitura de todas as pessoas
 router.get('/user', authToken, selectUsuario);//Leitura de uma pessoa
 router.put('/user', authToken, updateUsuario);//Atualização dos dados de uma pessoa
